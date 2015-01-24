@@ -36,7 +36,7 @@ sub list_threads {
 
 	$response .= "<br />\n";
 	$response .= "<input type=\"submit\" value=\"New thread\" onclick=\"document.getElementById('form').style.display='';return false;\">\n";
-	$response .= "<form name=\"newThreadForm\" action=\"new_thread\" method=\"post\" id=\"form\" style=\"display:none;\">\n";
+	$response .= "<form name=\"newThreadForm\" action=\"new_thread\" method=\"post\" id=\"form\">";
 	$response .= "Title: <input name=\"title\" /> \n";
 	$response .= "Username: <input name=\"username\" /> \n";
 	$response .= "<input type=\"submit\" value=\"Post\" />\n";
@@ -60,7 +60,7 @@ sub get_thread {
 
 	$response .= "<br />\n";
 	$response .= "<input type=\"submit\" value=\"New post\" onclick=\"document.getElementById('form').style.display='';return false;\">\n";
-	$response .= "<form name=\"replyForm\" action=\"reply\" method=\"post\" id=\"form\" style=\"display:none;\">\n";
+	$response .= "<form name=\"replyForm\" action=\"reply\" method=\"post\" id=\"form\">\n";
 	$response .= "Username: <br /><input name=\"username\" /><br />\n";
 	$response .= "<textarea name=\"post\" cols=\"60\" rows=\"7\"></textarea><br />\n";
 	$response .= "<input type=\"submit\" value=\"Post\" />\n";
@@ -110,14 +110,14 @@ my $app = sub {
 	my $env = shift;
 	my $page = "";
 
-	print Dumper($env) . "\n";
+	#print Dumper($env) . "\n";
 
 	$page .= "<html>
 		<head>
 			<title>boards</title>
 			<link rel=\"stylesheet\" href=\"main.css\">
 		</head>\n";
-	$page .= "<body>
+	$page .= "<body onload=\"document.getElementById('form').style.display='none';return false;\">
 		<div class=\"container\">
 		<div class=\"site\">
 		<div class=\"header\">
