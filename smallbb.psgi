@@ -58,14 +58,15 @@ sub get_thread {
 		$response .= "<p class=\"post\">$posts->{post}</p>\n\n";
 	}
 
-	$response .= "<br />\n";
-	$response .= "<input type=\"submit\" value=\"New post\" onclick=\"document.getElementById('form').style.display='';return false;\">\n";
-	$response .= "<form name=\"replyForm\" action=\"reply\" method=\"post\" id=\"form\">\n";
-	$response .= "Username: <br /><input name=\"username\" /><br />\n";
-	$response .= "<textarea name=\"post\" cols=\"60\" rows=\"7\"></textarea><br />\n";
-	$response .= "<input type=\"submit\" value=\"Post\" />\n";
-	$response .= "</form>\n";
-
+	if ($response) {
+		$response .= "<br />\n";
+		$response .= "<input type=\"submit\" value=\"New post\" onclick=\"document.getElementById('form').style.display='';return false;\">\n";
+		$response .= "<form name=\"replyForm\" action=\"reply\" method=\"post\" id=\"form\">\n";
+		$response .= "Username: <br /><input name=\"username\" /><br />\n";
+		$response .= "<textarea name=\"post\" cols=\"60\" rows=\"7\"></textarea><br />\n";
+		$response .= "<input type=\"submit\" value=\"Post\" />\n";
+		$response .= "</form>\n";
+	}
 
 	$sth->finish();
 	return $response || "No thread found<br />\n";
@@ -83,6 +84,7 @@ sub new_post {
 	my $sth = $dbh->prepare("INSERT INTO posts (thread,post,author) VALUES(?,?,?)");
 	$sth->execute($thread, escape_html($req->param('post')) || "<i class=\"meta\">bump</i>", escape_html($req->param('username')) || "Anonymous Coward");
 
+	$sth->finish();
 	return $response;
 }
 
@@ -97,6 +99,7 @@ sub new_thread {
 	if ($req->param('title')) {
 		my $sth = $dbh->prepare("INSERT INTO threads (topic,author) VALUES(?,?)");
 		$sth->execute(escape_html($req->param('title')), escape_html($req->param('username')) || "Anonymous Coward");
+		$sth->finish();
 	}
 
 #	# FIXME: Huge race here
