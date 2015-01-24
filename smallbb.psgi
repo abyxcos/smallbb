@@ -141,7 +141,7 @@ my $app = sub {
 	} elsif ($env->{PATH_INFO} =~ /new_thread$/ && $env->{REQUEST_METHOD} eq 'POST') {
 		# We only care about POSTs, don't let people come here with a GET
 		$page .= new_thread($env);
-	} elsif (my ($thread) = ($env->{PATH_INFO} =~ /^\/(\d+)\//)) {
+	} elsif (my ($thread) = ($env->{PATH_INFO} =~ /^\/(\d+)/)) {
 		# Assign the regex groups (\d+) to the variables list
 		# Hijack /reply links
 		# Then fall through to display the thread with the new post
