@@ -78,6 +78,8 @@ sub new_post {
 	my $req = Plack::Request->new($env);
 	my $response = "";
 
+	# Empty usernames default to Anonymous Coward
+	# Empty posts default to bumps
 	my $sth = $dbh->prepare("INSERT INTO posts (thread,post,author) VALUES(?,?,?)");
 	$sth->execute($thread, escape_html($req->param('post')) || "<i class=\"meta\">bump</i>", escape_html($req->param('username')) || "Anonymous Coward");
 
@@ -90,8 +92,12 @@ sub new_thread {
 	my $req = Plack::Request->new($env);
 	my $response = "";
 
-	my $sth = $dbh->prepare("INSERT INTO threads (topic,author) VALUES(?,?)");
-	$sth->execute(escape_html($req->param('title')), escape_html($req->param('username')) || "Anonymous Coward");
+	# Empty usernames default to Anonymous Coward
+	# Empty threads are useless, just abort
+	if ($req->param('title')) {
+		my $sth = $dbh->prepare("INSERT INTO threads (topic,author) VALUES(?,?)");
+		$sth->execute(escape_html($req->param('title')), escape_html($req->param('username')) || "Anonymous Coward");
+	}
 
 #	# FIXME: Huge race here
 #	$sth = $dbh->prepare("SELECT id FROM threads ORDER BY ctime DESC LIMIT 1");
