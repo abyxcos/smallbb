@@ -110,6 +110,8 @@ my $app = sub {
 	my $env = shift;
 	my $page = "";
 
+	print Dumper($env) . "\n";
+
 	$page .= "<html>
 		<head>
 			<title>boards</title>
@@ -130,14 +132,16 @@ my $app = sub {
 		# Needs to be at the top of the chain to catch sub paths
 		open my $fh, "<", $css_file or return &throw_404();
 		return [200, ['Content-Type'=>'text/css'], $fh];
-	} elsif ($env->{PATH_INFO} =~ /new_thread$/) {
+	} elsif ($env->{PATH_INFO} =~ /new_thread$/ && $env->{REQUEST_METHOD} eq 'POST') {
+		# We only care about POSTs, don't let people come here with a GET
 		$page .= new_thread($env);
 	} elsif (my ($thread) = ($env->{PATH_INFO} =~ /^\/(\d+)\//)) {
 		# Assign the regex groups (\d+) to the variables list
 		# Hijack /reply links
 		# Then fall through to display the thread with the new post
+		# We only care about POSTs, don't let people come here with a GET
 		# FIXME: double-post protection
-		$page .= new_post($env, $thread) if ($env->{PATH_INFO} =~ /reply$/);
+		$page .= new_post($env, $thread) if ($env->{PATH_INFO} =~ /reply$/ && $env->{REQUEST_METHOD} eq 'POST');
 		# Grab a list of threads that corresponds to our forum
 		$page .= &get_thread($thread);
 	} else {
