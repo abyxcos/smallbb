@@ -79,7 +79,7 @@ sub new_post {
 	my $response = "";
 
 	my $sth = $dbh->prepare("INSERT INTO posts (thread,post,author) VALUES(?,?,?)");
-	$sth->execute($thread, escape_html($req->param('post')), escape_html($req->param('username')) || "Anonymous Coward");
+	$sth->execute($thread, escape_html($req->param('post')) || "<i class=\"meta\">bump</i>", escape_html($req->param('username')) || "Anonymous Coward");
 
 	return $response;
 }
