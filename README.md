@@ -10,10 +10,12 @@ This is a [Plack](http://plackperl.org/) app, and uses [SQLite](https://sqlite.o
 
 ## Installation
 Smallbb should be installed outside the web server directory, as this may accidentally allow the database to be downloaded. Only the database and the CSS files are required in the installation directory. The smallbb.psgi application may be installed elsewhere.
-    sqlite3 boards.db < smallbb.schema
+
+    boards.db < smallbb.schema
 
 ## Usage
 Run the application in the installation directory. Multiple installations in separate directories can be served by a single application file.
+
     plackup smallbb.psgi
 
 ## Configuration
