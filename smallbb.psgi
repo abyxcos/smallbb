@@ -52,7 +52,7 @@ sub list_threads {
 sub get_thread {
 	my $thread = shift;
 	my $response = "";
-	my $sth = $dbh->prepare("SELECT * FROM posts WHERE THREAD = ? ORDER BY id ASC LIMIT ?");
+	my $sth = $dbh->prepare("SELECT * FROM posts WHERE THREAD = ? AND hidden IS NULL ORDER BY id ASC LIMIT ?");
 	$sth->execute($thread, $disp_posts);
 
 	my $posts;
