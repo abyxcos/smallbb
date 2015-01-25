@@ -17,6 +17,7 @@ my $app_uri	 = '';
 my $app_name	 = 'board';
 my $disp_threads = 15;	# -1 for all
 my $disp_posts	 = 20;	# -1 for all
+my $max_post_length = 5000;
 
 my $dbfile = 'boards.db';	# Boards database
 my $dbh = DBI->connect("dbi:SQLite:dbname=$dbfile",
@@ -66,7 +67,7 @@ sub get_thread {
 		$response .= "<input type=\"submit\" value=\"New post\" onclick=\"document.getElementById('form').style.display='';return false;\">\n";
 		$response .= "<form name=\"replyForm\" action=\"reply\" method=\"post\" id=\"form\">\n";
 		$response .= "Username: <br /><input name=\"username\" /><br />\n";
-		$response .= "<textarea name=\"post\" cols=\"60\" rows=\"7\"></textarea><br />\n";
+		$response .= "<textarea name=\"post\" cols=\"60\" rows=\"7\" maxlength=\"$max_post_length\"></textarea><br />\n";
 		$response .= "<input type=\"submit\" value=\"Post\" />\n";
 		$response .= "</form>\n";
 	#}
@@ -82,10 +83,14 @@ sub new_post {
 	my $req = Plack::Request->new($env);
 	my $response = "";
 
+	# Enforce our $max_post_length rule. 
+	# Select 0-$max_post_length characters along a word boundary and group it.
+	# Treat the whole string as a single line.
+	(my $post) = ($req->param('post') =~ /^(.{0,$max_post_length})\b.*$/s);
 	# Empty usernames default to Anonymous Coward
 	# Empty posts default to bumps
 	my $sth = $dbh->prepare("INSERT INTO posts (thread,post,author) VALUES(?,?,?)");
-	$sth->execute($thread, escape_html($req->param('post')) || "<i class=\"meta\">bump</i>", escape_html($req->param('username')) || "Anonymous Coward");
+	$sth->execute($thread, escape_html($post) || "<i class=\"meta\">bump</i>", escape_html($req->param('username')) || "Anonymous Coward");
 
 	$sth->finish();
 	return $response;
