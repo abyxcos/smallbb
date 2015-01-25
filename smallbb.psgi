@@ -8,8 +8,11 @@ use warnings;
 use strict;
 use Plack::Request;
 use DBI;
-use Data::Dumper qw(Dumper);
-$Data::Dumper::Sortkeys = 1;
+my $debug = 0;
+if ($debug) {
+	use Data::Dumper qw(Dumper);
+	$Data::Dumper::Sortkeys = 1;
+}
 use HTML::Escape qw(escape_html);
 
 # App uri and name are used in the main loop and to write out proper links
@@ -126,7 +129,7 @@ sub throw_404 {
 my $app = sub {
 	my $env = shift;
 	my $page = "";
-	#print Dumper($env) . "\n";	# Log the incoming headers
+	print Dumper($env) . "\n" if ($debug);	# Log the incoming headers
 
 	$page .= "<html>
 		<head>
