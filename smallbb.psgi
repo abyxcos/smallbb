@@ -12,6 +12,9 @@ use Data::Dumper qw(Dumper);
 $Data::Dumper::Sortkeys = 1;
 use HTML::Escape qw(escape_html);
 
+# App uri and name are used in the main loop and to write out proper links
+my $app_uri	 = '';
+my $app_name	 = 'board';
 my $disp_threads = 15;	# -1 for all
 my $disp_posts	 = 20;	# -1 for all
 
@@ -28,7 +31,7 @@ sub list_threads {
 
 	my $threads;
 	while($threads = $sth->fetchrow_hashref()) {
-		$response .= "<a href='/$threads->{id}/'><p>$threads->{topic}</p></a>\n";
+		$response .= "<a href=\"$app_uri/$app_name/$threads->{id}/\"><p>$threads->{topic}</p></a>\n";
 		$response .= "<p class=\"meta\">by $threads->{author}";
 		$response .= " last post $threads->{mtime}" if ($threads->{mtime});
 		$response .= "</p>\n";
@@ -58,7 +61,7 @@ sub get_thread {
 		$response .= "<p class=\"post\">$posts->{post}</p>\n\n";
 	}
 
-	if ($response) {
+	#if ($response) {
 		$response .= "<br />\n";
 		$response .= "<input type=\"submit\" value=\"New post\" onclick=\"document.getElementById('form').style.display='';return false;\">\n";
 		$response .= "<form name=\"replyForm\" action=\"reply\" method=\"post\" id=\"form\">\n";
@@ -66,7 +69,7 @@ sub get_thread {
 		$response .= "<textarea name=\"post\" cols=\"60\" rows=\"7\"></textarea><br />\n";
 		$response .= "<input type=\"submit\" value=\"Post\" />\n";
 		$response .= "</form>\n";
-	}
+	#}
 
 	$sth->finish();
 	return $response || "No thread found<br />\n";
@@ -118,8 +121,7 @@ sub throw_404 {
 my $app = sub {
 	my $env = shift;
 	my $page = "";
-
-	#print Dumper($env) . "\n";
+	#print Dumper($env) . "\n";	# Log the incoming headers
 
 	$page .= "<html>
 		<head>
@@ -130,9 +132,10 @@ my $app = sub {
 		<div class=\"container\">
 		<div class=\"site\">
 		<div class=\"header\">
-			<h1 class=\"title\"><a href=\"/\">boards</a></h1>
+			<h1 class=\"title\"><a href=\"$app_uri/$app_name/\">boards</a></h1>
 			<a class=\"extra\" href=\"#\">stuff</a>
 		</div>";
+	$env->{PATH_INFO} =~ s/$app_uri\/$app_name//;
 	if ($env->{PATH_INFO} eq '/') {
 		# Root of the app, thread index goes here
 		$page .= &list_threads();
