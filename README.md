@@ -1,6 +1,8 @@
 # smallbb
 A small bulletin board in perl
 
+An example site may be found [here](http://new.mnetic.ch/board/).
+
 ## Dependencies
 This is a [Plack](http://plackperl.org/) app, and uses [SQLite](https://sqlite.org/).
 * [Plack](http://search.cpan.org/~miyagawa/Plack-1.0033/lib/Plack.pm)
